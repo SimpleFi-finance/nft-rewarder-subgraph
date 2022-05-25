@@ -1,0 +1,9 @@
+type User @entity {
+  id: ID!
+}
+
+type NFT @entity {
+  id: ID!
+  tokenAddress: String!
+  tokenId: BigInt!
+}

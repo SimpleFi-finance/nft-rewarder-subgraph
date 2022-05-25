@@ -1,0 +1,24 @@
+{
+  "name": "simplefi-nft-rewarder",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SimpleFi-finance/nft-rewarder-subgraph.git"
+  },
+  "author": "SimpleFi",
+  "bugs": {
+    "url": "https://github.com/SimpleFi-finance/nft-rewarder-subgraph.git/issues"
+  },
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ simplefi-finance/nft-rewarder",
+    "create-local": "graph create --node http://localhost:8020/ simplefi-finance/nft-rewarder",
+    "remove-local": "graph remove --node http://localhost:8020/ simplefi-finance/nft-rewarder",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 simplefi-finance/nft-rewarder"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.23.2",
+    "@graphprotocol/graph-ts": "0.23.1"
+  }
+}

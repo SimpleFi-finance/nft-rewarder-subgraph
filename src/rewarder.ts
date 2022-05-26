@@ -1,5 +1,10 @@
 import { Claimed, TransferSingle } from "../generated/NFTRewarder/NFTRewarder";
-import { ADDRESS_ZERO, getOrCreateReward, getOrCreateUser } from "./rewarderUtils";
+import {
+  ADDRESS_ZERO,
+  getOrCreateAccountBalance,
+  getOrCreateReward,
+  getOrCreateUser,
+} from "./rewarderUtils";
 
 export function handleClaimed(event: Claimed): void {
   let tokenAddress = event.address.toHexString();
@@ -12,14 +17,21 @@ export function handleClaimed(event: Claimed): void {
 }
 
 export function handleTransferSingle(event: TransferSingle): void {
-  let rewarder = event.address;
-  let from = event.params.from;
-  let to = event.params.to;
-  let tokenId = event.params.id;
-  let value = event.params.value;
-  let operator = event.params.operator;
-
-  if (from.toHexString() == ADDRESS_ZERO) {
-    // create reward
+  if (event.params.from.toHexString() == ADDRESS_ZERO) {
+    //  handled in Claimed
+    return;
   }
+
+  let rewardId = event.address.toHexString() + "-" + event.params.id.toString();
+  let from = getOrCreateUser(event.params.from.toHexString());
+  let to = getOrCreateUser(event.params.to.toHexString());
+  let value = event.params.value;
+
+  let fromAccountBalance = getOrCreateAccountBalance(rewardId, from.id);
+  fromAccountBalance.amountOwned = fromAccountBalance.amountOwned.minus(value);
+  fromAccountBalance.save();
+
+  let toAccountBalance = getOrCreateAccountBalance(rewardId, to.id);
+  toAccountBalance.amountOwned = toAccountBalance.amountOwned.plus(value);
+  toAccountBalance.save();
 }

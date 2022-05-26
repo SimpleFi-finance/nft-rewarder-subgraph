@@ -70,7 +70,9 @@ export function getOrCreateAccountBalance(reward: string, user: string): Account
   accountBalance = new AccountBalance(id);
   accountBalance.reward = reward;
   accountBalance.user = user;
-  accountBalance.amountMinted = BigInt.fromI32(0);
+  accountBalance.amountWhitelisted = BigInt.fromI32(0);
+  accountBalance.amountClaimed = BigInt.fromI32(0);
+  accountBalance.amountClaimable = BigInt.fromI32(0);
   accountBalance.amountOwned = BigInt.fromI32(0);
   accountBalance.save();
 
@@ -78,7 +80,7 @@ export function getOrCreateAccountBalance(reward: string, user: string): Account
 }
 
 /**
- * Update account balances afeter NFT reward transfer
+ * Update account balances after NFT reward transfer
  * @param rewardId
  * @param from
  * @param to

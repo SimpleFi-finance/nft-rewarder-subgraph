@@ -15,8 +15,22 @@ type Reward @entity {
 type AccountBalance @entity {
   " rewardId-userId "
   id: ID!
+
+  " user whose balance is tracked "
   user: User!
+
+  " token for which balance is tracked "
   reward: Reward!
+
+  " amount of tokens user if whitelisted for, for this reward "
+  amountWhitelisted: BigInt!
+
+  " amount of tokens already claimed "
+  amountClaimed: BigInt!
+
+  " amount of claimable tokens (= whitelisted - claimed)"
+  amountClaimable: BigInt!
+
+  " amount of owned tokens, also includes tokens that were purchased or received "
   amountOwned: BigInt!
-  amountMinted: BigInt!
 }

@@ -1,10 +1,5 @@
-import { Claimed, TransferSingle } from "../generated/NFTRewarder/NFTRewarder";
-import {
-  ADDRESS_ZERO,
-  getOrCreateAccountBalance,
-  getOrCreateReward,
-  getOrCreateUser,
-} from "./rewarderUtils";
+import { Claimed, TransferBatch, TransferSingle } from "../generated/NFTRewarder/NFTRewarder";
+import { ADDRESS_ZERO, getOrCreateReward, getOrCreateUser, updateBalances } from "./rewarderUtils";
 
 export function handleClaimed(event: Claimed): void {
   let tokenAddress = event.address.toHexString();
@@ -27,11 +22,18 @@ export function handleTransferSingle(event: TransferSingle): void {
   let to = getOrCreateUser(event.params.to.toHexString());
   let value = event.params.value;
 
-  let fromAccountBalance = getOrCreateAccountBalance(rewardId, from.id);
-  fromAccountBalance.amountOwned = fromAccountBalance.amountOwned.minus(value);
-  fromAccountBalance.save();
+  updateBalances(rewardId, from.id, to.id, value);
+}
 
-  let toAccountBalance = getOrCreateAccountBalance(rewardId, to.id);
-  toAccountBalance.amountOwned = toAccountBalance.amountOwned.plus(value);
-  toAccountBalance.save();
+export function handleTransferBatch(event: TransferBatch): void {
+  let from = getOrCreateUser(event.params.from.toHexString());
+  let to = getOrCreateUser(event.params.to.toHexString());
+
+  let numOfTransfers = event.params.ids.length;
+
+  for (let i = 0; i < numOfTransfers; i++) {
+    let rewardId = event.address.toHexString() + "-" + event.params.ids[i].toString();
+    let value = event.params.values[i];
+    updateBalances(rewardId, from.id, to.id, value);
+  }
 }

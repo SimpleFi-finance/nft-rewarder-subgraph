@@ -76,3 +76,20 @@ export function getOrCreateAccountBalance(reward: string, user: string): Account
 
   return accountBalance;
 }
+
+/**
+ * Update account balances afeter NFT reward transfer
+ * @param rewardId
+ * @param from
+ * @param to
+ * @param amount
+ */
+export function updateBalances(rewardId: string, from: string, to: string, amount: BigInt) {
+  let fromAccountBalance = getOrCreateAccountBalance(rewardId, from);
+  fromAccountBalance.amountOwned = fromAccountBalance.amountOwned.minus(amount);
+  fromAccountBalance.save();
+
+  let toAccountBalance = getOrCreateAccountBalance(rewardId, to);
+  toAccountBalance.amountOwned = toAccountBalance.amountOwned.plus(amount);
+  toAccountBalance.save();
+}

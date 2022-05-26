@@ -1,9 +1,21 @@
 type User @entity {
+  " accountAddress "
   id: ID!
 }
 
-type NFT @entity {
+type Reward @entity {
+  " tokenAddress-tokenId "
   id: ID!
   tokenAddress: String!
   tokenId: BigInt!
+  balances: [AccountBalance!]! @derivedFrom(field: "reward")
+}
+
+type AccountBalance @entity {
+  " rewardId-userId "
+  id: ID!
+  user: User!
+  reward: Reward!
+  amountOwned: BigInt!
+  amountMinted: BigInt!
 }

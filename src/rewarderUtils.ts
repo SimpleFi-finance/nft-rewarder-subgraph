@@ -1,4 +1,4 @@
-import { Reward } from "../generated/schema";
+import { Reward, User } from "../generated/schema";
 import { BigInt } from "@graphprotocol/graph-ts";
 
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
@@ -24,4 +24,20 @@ export function getOrCreateReward(tokenAddress: string, tokenId: BigInt, minter:
 
   reward.save();
   return reward;
+}
+
+/**
+ * Create user entity
+ * @param account
+ * @returns
+ */
+export function getOrCreateUser(account: string): User {
+  let user = User.load(account);
+  if (user != null) {
+    return user as User;
+  }
+
+  user = new User(account);
+  user.save();
+  return user;
 }

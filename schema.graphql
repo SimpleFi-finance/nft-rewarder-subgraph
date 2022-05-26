@@ -1,6 +1,7 @@
 type User @entity {
   " accountAddress "
   id: ID!
+  balances: [AccountBalance!]! @derivedFrom(field: "user")
 }
 
 type Reward @entity {

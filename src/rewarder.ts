@@ -1,13 +1,13 @@
 import { Claimed, TransferSingle } from "../generated/NFTRewarder/NFTRewarder";
-import { ADDRESS_ZERO, getOrCreateReward } from "./rewarderUtils";
+import { ADDRESS_ZERO, getOrCreateReward, getOrCreateUser } from "./rewarderUtils";
 
 export function handleClaimed(event: Claimed): void {
   let tokenAddress = event.address.toHexString();
   let tokenId = event.params.tokenId;
-  let minter = event.params.user.toHexString();
+  let minter = getOrCreateUser(event.params.user.toHexString());
 
   // create Reward entity if it's a first mint of this reward
-  getOrCreateReward(tokenAddress, tokenId, minter);
+  getOrCreateReward(tokenAddress, tokenId, minter.id);
 }
 
 export function handleTransferSingle(event: TransferSingle): void {

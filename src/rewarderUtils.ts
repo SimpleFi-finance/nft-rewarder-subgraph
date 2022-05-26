@@ -10,12 +10,7 @@ export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
  * @param minter
  * @returns
  */
-export function getOrCreateReward(
-  tokenAddress: string,
-  tokenId: BigInt,
-  minter: string,
-  amount: BigInt
-): Reward {
+export function getOrCreateReward(tokenAddress: string, tokenId: BigInt, uri: string): Reward {
   let id = tokenAddress + "-" + tokenId.toString();
   let reward = Reward.load(id);
   if (reward != null) {
@@ -25,13 +20,9 @@ export function getOrCreateReward(
   reward = new Reward(id);
   reward.tokenAddress = tokenAddress;
   reward.tokenId = tokenId;
-  // TODO add metadata stuff
+  reward.metadataUri = uri;
 
-  // set initial holdings for the minter
-  let userAccountBalance = getOrCreateAccountBalance(reward.id, minter);
-  userAccountBalance.amountMinted = amount;
-  userAccountBalance.amountOwned = amount;
-  userAccountBalance.save();
+  // TODO parse metadata stuff
 
   reward.save();
   return reward;

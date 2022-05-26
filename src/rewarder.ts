@@ -1,5 +1,21 @@
-import { Claimed, TransferBatch, TransferSingle } from "../generated/NFTRewarder/NFTRewarder";
-import { ADDRESS_ZERO, getOrCreateReward, getOrCreateUser, updateBalances } from "./rewarderUtils";
+import { Claimed, TransferBatch, TransferSingle, URI } from "../generated/NFTRewarder/NFTRewarder";
+import { BigInt } from "@graphprotocol/graph-ts";
+import {
+  ADDRESS_ZERO,
+  getOrCreateAccountBalance,
+  getOrCreateReward,
+  getOrCreateUser,
+  updateBalances,
+} from "./rewarderUtils";
+
+export function handleURISet(event: URI): void {
+  let tokenAddress = event.address.toHexString();
+  let tokenId = event.params.id;
+  let metadataUri = event.params.value;
+
+  // create reward entity
+  getOrCreateReward(tokenAddress, tokenId, metadataUri);
+}
 
 export function handleClaimed(event: Claimed): void {
   let tokenAddress = event.address.toHexString();
@@ -7,8 +23,13 @@ export function handleClaimed(event: Claimed): void {
   let minter = getOrCreateUser(event.params.user.toHexString());
   let amount = event.params.amount;
 
-  // create Reward entity if it's a first mint of this reward
-  getOrCreateReward(tokenAddress, tokenId, minter.id, amount);
+  // update account balance
+  let rewardId = tokenAddress + "-" + tokenId;
+  let accountBalance = getOrCreateAccountBalance(rewardId, minter.id);
+  accountBalance.amountClaimed = accountBalance.amountClaimed.plus(amount);
+  accountBalance.amountOwned = accountBalance.amountOwned.plus(amount);
+  accountBalance.amountClaimable = accountBalance.amountClaimable.minus(amount);
+  accountBalance.save();
 }
 
 export function handleTransferSingle(event: TransferSingle): void {

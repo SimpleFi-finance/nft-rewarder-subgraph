@@ -1,4 +1,10 @@
-import { Claimed, TransferBatch, TransferSingle, URI } from "../generated/NFTRewarder/NFTRewarder";
+import {
+  Claimed,
+  TransferBatch,
+  TransferSingle,
+  URI,
+  Whitelisted,
+} from "../generated/NFTRewarder/NFTRewarder";
 import { BigInt } from "@graphprotocol/graph-ts";
 import {
   ADDRESS_ZERO,
@@ -24,11 +30,21 @@ export function handleClaimed(event: Claimed): void {
   let amount = event.params.amount;
 
   // update account balance
-  let rewardId = tokenAddress + "-" + tokenId;
+  let rewardId = tokenAddress + "-" + tokenId.toString();
   let accountBalance = getOrCreateAccountBalance(rewardId, minter.id);
   accountBalance.amountClaimed = accountBalance.amountClaimed.plus(amount);
   accountBalance.amountOwned = accountBalance.amountOwned.plus(amount);
   accountBalance.amountClaimable = accountBalance.amountClaimable.minus(amount);
+  accountBalance.save();
+}
+
+export function handleWhitelisted(event: Whitelisted): void {
+  let rewardId = event.address.toHexString() + "-" + event.params.tokenId.toString();
+  let amount = event.params.amount;
+  let user = getOrCreateUser(event.params.user.toHexString());
+
+  let accountBalance = getOrCreateAccountBalance(rewardId, user.id);
+  accountBalance.amountWhitelisted = accountBalance.amountWhitelisted.plus(amount);
   accountBalance.save();
 }
 

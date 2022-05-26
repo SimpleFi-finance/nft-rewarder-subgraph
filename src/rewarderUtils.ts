@@ -77,7 +77,7 @@ export function getOrCreateAccountBalance(reward: string, user: string): Account
  * @param to
  * @param amount
  */
-export function updateBalances(rewardId: string, from: string, to: string, amount: BigInt) {
+export function updateBalances(rewardId: string, from: string, to: string, amount: BigInt): void {
   let fromAccountBalance = getOrCreateAccountBalance(rewardId, from);
   fromAccountBalance.amountOwned = fromAccountBalance.amountOwned.minus(amount);
   fromAccountBalance.save();

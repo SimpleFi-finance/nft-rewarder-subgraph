@@ -5,9 +5,10 @@ export function handleClaimed(event: Claimed): void {
   let tokenAddress = event.address.toHexString();
   let tokenId = event.params.tokenId;
   let minter = getOrCreateUser(event.params.user.toHexString());
+  let amount = event.params.amount;
 
   // create Reward entity if it's a first mint of this reward
-  getOrCreateReward(tokenAddress, tokenId, minter.id);
+  getOrCreateReward(tokenAddress, tokenId, minter.id, amount);
 }
 
 export function handleTransferSingle(event: TransferSingle): void {

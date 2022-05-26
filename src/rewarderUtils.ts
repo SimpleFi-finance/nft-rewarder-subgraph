@@ -1,4 +1,4 @@
-import { Reward, User } from "../generated/schema";
+import { AccountBalance, Reward, User } from "../generated/schema";
 import { BigInt } from "@graphprotocol/graph-ts";
 
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
@@ -10,7 +10,12 @@ export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
  * @param minter
  * @returns
  */
-export function getOrCreateReward(tokenAddress: string, tokenId: BigInt, minter: string): Reward {
+export function getOrCreateReward(
+  tokenAddress: string,
+  tokenId: BigInt,
+  minter: string,
+  amount: BigInt
+): Reward {
   let id = tokenAddress + "-" + tokenId.toString();
   let reward = Reward.load(id);
   if (reward != null) {
@@ -21,6 +26,12 @@ export function getOrCreateReward(tokenAddress: string, tokenId: BigInt, minter:
   reward.tokenAddress = tokenAddress;
   reward.tokenId = tokenId;
   // TODO add metadata stuff
+
+  // set initial holdings for the minter
+  let userAccountBalance = getOrCreateAccountBalance(reward.id, minter);
+  userAccountBalance.amountMinted = amount;
+  userAccountBalance.amountOwned = amount;
+  userAccountBalance.save();
 
   reward.save();
   return reward;
@@ -39,5 +50,29 @@ export function getOrCreateUser(account: string): User {
 
   user = new User(account);
   user.save();
+
   return user;
+}
+
+/**
+ * Create AccountBalance entity which tracks user's holdings of reward NFTs
+ * @param reward
+ * @param user
+ * @returns
+ */
+export function getOrCreateAccountBalance(reward: string, user: string): AccountBalance {
+  let id = reward + "-" + user;
+  let accountBalance = AccountBalance.load(id);
+  if (accountBalance != null) {
+    return accountBalance as AccountBalance;
+  }
+
+  accountBalance = new AccountBalance(id);
+  accountBalance.reward = reward;
+  accountBalance.user = user;
+  accountBalance.amountMinted = BigInt.fromI32(0);
+  accountBalance.amountOwned = BigInt.fromI32(0);
+  accountBalance.save();
+
+  return accountBalance;
 }

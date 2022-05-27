@@ -10,6 +10,7 @@ type Reward @entity {
   metadataUri: String!
   tokenAddress: String!
   tokenId: BigInt!
+  supply: BigInt!
   balances: [AccountBalance!]! @derivedFrom(field: "reward")
 }
 

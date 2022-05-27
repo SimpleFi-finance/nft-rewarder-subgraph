@@ -21,6 +21,7 @@ export function getOrCreateReward(tokenAddress: string, tokenId: BigInt, uri: st
   reward.tokenAddress = tokenAddress;
   reward.tokenId = tokenId;
   reward.metadataUri = uri;
+  reward.supply = BigInt.fromI32(0);
 
   // TODO parse metadata stuff
 

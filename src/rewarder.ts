@@ -7,6 +7,7 @@ import {
   URI,
   Whitelisted,
 } from "../generated/NFTRewarder/NFTRewarder";
+import { Reward } from "../generated/schema";
 import {
   ADDRESS_ZERO,
   getOrCreateAccountBalance,
@@ -33,18 +34,21 @@ export function handleURISet(event: URI): void {
  * @param event
  */
 export function handleClaimed(event: Claimed): void {
-  let tokenAddress = event.address.toHexString();
-  let tokenId = event.params.tokenId;
+  let rewardId = event.address.toHexString() + "-" + event.params.tokenId.toString();
   let minter = getOrCreateUser(event.params.user.toHexString());
   let amount = event.params.amount;
 
   // update account balance
-  let rewardId = tokenAddress + "-" + tokenId.toString();
   let accountBalance = getOrCreateAccountBalance(rewardId, minter.id);
   accountBalance.amountClaimed = accountBalance.amountClaimed.plus(amount);
   accountBalance.amountOwned = accountBalance.amountOwned.plus(amount);
   accountBalance.amountClaimable = accountBalance.amountClaimable.minus(amount);
   accountBalance.save();
+
+  // update reward supply
+  let reward = Reward.load(rewardId) as Reward;
+  reward.supply = reward.supply.plus(BigInt.fromI32(1));
+  reward.save();
 }
 
 /**

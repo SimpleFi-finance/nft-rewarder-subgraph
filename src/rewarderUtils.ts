@@ -1,5 +1,6 @@
 import { AccountBalance, Reward, User } from "../generated/schema";
-import { BigInt } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ipfs, json, log } from "@graphprotocol/graph-ts";
+import { NFTRewarder } from "../generated/NFTRewarder/NFTRewarder";
 
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 
@@ -23,9 +24,44 @@ export function getOrCreateReward(tokenAddress: string, tokenId: BigInt, uri: st
   reward.metadataUri = uri;
   reward.supply = BigInt.fromI32(0);
 
-  // TODO parse metadata stuff
+  //// load and parse metadata
+
+  // metadata uri can look like:
+  // https://gateway.pinata.cloud/ipfs/QmXcAEbmojk1V7Qw43jdAAsQJXL69NBxStmBzed3JKRLYv
+  // ipfs://QmQJRBdSY22LvFyxfWznKgvJkwC6pmVmtHTdNos4YgyJVK
+
+  let ipfsHash = uri.substring(uri.lastIndexOf("Qm"));
+  let data = ipfs.cat(ipfsHash);
+
+  if (!data) {
+    log.warning("Failed to fetch metadata from ipfs for contract={}, tokenId={}", [
+      tokenAddress,
+      tokenId.toString(),
+    ]);
+    reward.save();
+    return reward;
+  }
+
+  // parse metadata
+  let metadata = json.fromBytes(data).toObject();
+
+  let name = metadata.get("name");
+  if (name) {
+    reward.name = name.toString();
+  }
+
+  let description = metadata.get("description");
+  if (description) {
+    reward.description = description.toString();
+  }
+
+  let image = metadata.get("image");
+  if (image) {
+    reward.image = image.toString();
+  }
 
   reward.save();
+
   return reward;
 }
 

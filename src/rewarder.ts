@@ -47,7 +47,7 @@ export function handleClaimed(event: Claimed): void {
 
   // update reward supply
   let reward = Reward.load(rewardId) as Reward;
-  reward.supply = reward.supply.plus(BigInt.fromI32(1));
+  reward.supply = reward.supply.plus(amount);
   reward.save();
 }
 

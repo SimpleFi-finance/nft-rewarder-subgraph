@@ -12,7 +12,7 @@
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ simplefi-finance/nft-rewarder",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ gvladika/nft-rewarder",
     "create-local": "graph create --node http://localhost:8020/ simplefi-finance/nft-rewarder",
     "remove-local": "graph remove --node http://localhost:8020/ simplefi-finance/nft-rewarder",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 simplefi-finance/nft-rewarder"

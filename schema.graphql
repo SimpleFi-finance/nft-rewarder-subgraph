@@ -45,7 +45,7 @@ type AccountBalance @entity {
   " token for which balance is tracked "
   reward: Reward!
 
-  " amount of tokens user if whitelisted for, for this reward "
+  " amount of tokens user is whitelisted for, for this reward "
   amountWhitelisted: BigInt!
 
   " amount of tokens already claimed "

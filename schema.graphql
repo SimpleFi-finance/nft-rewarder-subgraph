@@ -1,9 +1,59 @@
 type User @entity {
+  " accountAddress "
   id: ID!
+
+  " balances for all rewards held by the user "
+  balances: [AccountBalance!]! @derivedFrom(field: "user")
 }
 
-type NFT @entity {
+type Reward @entity {
+  " tokenAddress-tokenId "
   id: ID!
+
+  " IPFS uri containing metadata "
+  metadataUri: String!
+
+  " contract address "
   tokenAddress: String!
+
+  " tokenId representing the reward  "
   tokenId: BigInt!
+
+  " total number of issued tokens for this reward "
+  supply: BigInt!
+
+  " name as defined in metadata "
+  name: String
+
+  " description as defined in metadata "
+  description: String
+
+  " link to the image as defined in metadata "
+  image: String
+
+  " account balances for this reward "
+  balances: [AccountBalance!]! @derivedFrom(field: "reward")
+}
+
+type AccountBalance @entity {
+  " rewardId-userId "
+  id: ID!
+
+  " user whose balance is tracked "
+  user: User!
+
+  " token for which balance is tracked "
+  reward: Reward!
+
+  " amount of tokens user is whitelisted for, for this reward "
+  amountWhitelisted: BigInt!
+
+  " amount of tokens already claimed "
+  amountClaimed: BigInt!
+
+  " amount of claimable tokens (= whitelisted - claimed)"
+  amountClaimable: BigInt!
+
+  " amount of owned tokens, also includes tokens that were purchased or received "
+  amountOwned: BigInt!
 }
